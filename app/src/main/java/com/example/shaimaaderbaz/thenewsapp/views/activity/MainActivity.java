@@ -7,6 +7,8 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.shaimaaderbaz.thenewsapp.R;
@@ -29,15 +31,17 @@ public class MainActivity extends AppCompatActivity implements NewsView,
     @BindView(R.id.recycler_news)
     RecyclerView newsRecyclerView;
 
-    private MainPresenterImp mPresenter;
+    @BindView(R.id.progress)
+    ProgressBar mProgress;
 
+    private MainPresenterImp mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        AppDB mAppDb=AppDB.getInstance(this);
+        AppDB mAppDb = AppDB.getInstance(this);
         mPresenter = new MainPresenterImp(this, new RemoteNewsRepositry(this), new LocalNewsRepositry(mAppDb));
     }
 
@@ -56,17 +60,17 @@ public class MainActivity extends AppCompatActivity implements NewsView,
 
     @Override
     public void showError(String error) {
-        Toast.makeText(this,error,Toast.LENGTH_LONG).show();
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void showProgress() {
-
+        mProgress.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-
+        mProgress.setVisibility(View.GONE);
     }
 
     @Override
@@ -78,13 +82,15 @@ public class MainActivity extends AppCompatActivity implements NewsView,
 
     @Override
     public void onItemSwiped(Article article) {
-        Toast.makeText(this,article.getTitle(),Toast.LENGTH_LONG).show();
+        Toast.makeText(this, article.getTitle(), Toast.LENGTH_LONG).show();
     }
+
     @Override
     public void onItemLongClicked(Article article) {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
         i.putExtra(Intent.EXTRA_SUBJECT, "Sharing URL");
         i.putExtra(Intent.EXTRA_TEXT, article.getUrl());
-        startActivity(Intent.createChooser(i, "Share URL"));    }
+        startActivity(Intent.createChooser(i, "Share URL"));
+    }
 }

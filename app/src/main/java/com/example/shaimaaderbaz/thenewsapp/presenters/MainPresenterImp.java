@@ -18,20 +18,24 @@ public class MainPresenterImp implements MainPresenter<Article> {
     private Repository msRepository;
 
     private Repository mLocalRepository;
+
     AllNewsCall presenterCallbackLocal = new AllNewsCall() {
         @Override
         public void success(List<Article> articles) {
             mView.showArticles(articles);
+            mView.hideProgress();
         }
 
         @Override
         public void error(String error) {
             mView.showError("No Iternet , No Local Data .");
+            mView.hideProgress();
         }
     };
     AllNewsCall presenterCallback = new AllNewsCall() {
         @Override
         public void success(List<Article> articles) {
+            mView.hideProgress();
             mView.showArticles(articles);
             mLocalRepository.deleteAllNews();
             mLocalRepository.putNews(articles);
@@ -39,6 +43,7 @@ public class MainPresenterImp implements MainPresenter<Article> {
 
         @Override
         public void error(String error) {
+            mView.hideProgress();
             mView.showError("No Internet , get Local data from DB .");
             mLocalRepository.getAllNews(presenterCallbackLocal);
         }
@@ -53,6 +58,7 @@ public class MainPresenterImp implements MainPresenter<Article> {
 
     @Override
     public void getAllNews() {
+        mView.showProgress();
         msRepository.getAllNews(presenterCallback);
     }
 }
